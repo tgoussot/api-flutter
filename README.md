@@ -2,6 +2,12 @@
 
 Stack : Node.js ≥ 24, Express 5, SQLite (`better-sqlite3`), Argon2id (`argon2`), `dotenv`.
 
+## Déploiement
+
+L'API est déployée ici :
+**https://api-flutter-tgoussot.labo-narra.fr**
+
+
 ## Prérequis
 
 - **Node.js 24 ou supérieur** (`node --version`)
@@ -120,6 +126,9 @@ Aucune stack trace n'est renvoyée au client ; l'erreur est seulement loggée c�
   réponse `400 Error`, pour ne pas révéler si un email existe.
 
 ## Tester avec curl
+
+Les exemples ciblent l'API locale. Pour tester la version déployée, remplacer
+`http://localhost:3000` par `https://api-flutter-tgoussot.labo-narra.fr`.
 
 JSON, identifiants valides → `200` + profil :
 
