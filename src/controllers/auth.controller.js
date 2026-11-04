@@ -1,10 +1,11 @@
 import argon2 from 'argon2';
+import jwt from 'jsonwebtoken';
 import db from '../db/database.js';
+import { JWT_SECRET, JWT_EXPIRES_IN } from '../config.js';
 
 const EMAIL_MAX_LENGTH = 254;
 const PASSWORD_MAX_LENGTH = 128;
 
-// Format email valid
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const sendError = (res) => res.status(400).json({ status: 400, message: 'Error' });
@@ -14,6 +15,16 @@ const findUserByEmail = db.prepare(`
   FROM users
   WHERE email = ?
 `);
+
+const toProfile = (user) => ({
+  status: 200,
+  message: 'Success',
+  id: user.id,
+  firstName: user.first_name,
+  lastName: user.last_name,
+  email: user.email,
+  role: user.role,
+});
 
 export async function login(req, res) {
   const { email, password } = req.body ?? {};
@@ -44,13 +55,10 @@ export async function login(req, res) {
     return sendError(res);
   }
 
-  return res.status(200).json({
-    status: 200,
-    message: 'Success',
-    id: user.id,
-    firstName: user.first_name,
-    lastName: user.last_name,
-    email: user.email,
-    role: user.role,
+  const token = jwt.sign({ sub: String(user.id) }, JWT_SECRET, {
+    algorithm: 'HS256',
+    expiresIn: JWT_EXPIRES_IN,
   });
+
+  return res.status(200).json({ ...toProfile(user), token });
 }
