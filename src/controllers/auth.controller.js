@@ -16,6 +16,12 @@ const findUserByEmail = db.prepare(`
   WHERE email = ?
 `);
 
+const findUserById = db.prepare(`
+  SELECT id, first_name, last_name, email, role
+  FROM users
+  WHERE id = ?
+`);
+
 const toProfile = (user) => ({
   status: 200,
   message: 'Success',
@@ -61,4 +67,13 @@ export async function login(req, res) {
   });
 
   return res.status(200).json({ ...toProfile(user), token });
+}
+
+export function me(req, res) {
+  const user = findUserById.get(req.userId);
+  if (!user) {
+    return res.status(401).json({ status: 401, message: 'Unauthorized' });
+  }
+
+  return res.status(200).json(toProfile(user));
 }
